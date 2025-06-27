@@ -14,6 +14,9 @@ import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
 import { Textarea } from '@/components/ui/textarea';
+import { useAuth } from '@/contexts/auth-context';
+import { db } from '@/lib/firebase';
+import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
 
 function SubmitButton({ hasRoadmap }: { hasRoadmap: boolean }) {
@@ -39,6 +42,7 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
   const { pending } = useFormStatus();
   const { toast } = useToast();
   const updateRequestRef = useRef<HTMLTextAreaElement>(null);
+  const { user } = useAuth();
 
   useEffect(() => {
     if (state.message === "Success" && resultRef.current) {
@@ -50,7 +54,15 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.roadmap]); // Depend on roadmap to run on new generation/update
 
-  const handleSaveRoadmap = () => {
+  const handleSaveRoadmap = async () => {
+    if (!user) {
+        toast({ title: "Login Required", description: "You must be logged in to save a roadmap.", variant: "destructive" });
+        return;
+    }
+    if (!db) {
+      toast({ title: "Configuration Error", description: "Firebase is not configured. Cannot save roadmap.", variant: "destructive" });
+      return;
+    }
     if (!state.roadmap || !state.careerPath || !state.skillLevel) return;
 
     const roadmapWithProgress = state.roadmap.map((phase: any) => ({
@@ -60,16 +72,15 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
     }));
 
     const newSavedRoadmap = {
+      userId: user.uid,
       title: state.careerPath,
       description: `A personalized roadmap for a ${state.skillLevel} ${state.careerPath}.`,
       roadmap: roadmapWithProgress,
-      createdAt: new Date().toISOString(),
+      createdAt: serverTimestamp(),
     };
 
     try {
-      const savedRoadmaps = JSON.parse(localStorage.getItem('savedRoadmaps') || '[]');
-      savedRoadmaps.push(newSavedRoadmap);
-      localStorage.setItem('savedRoadmaps', JSON.stringify(savedRoadmaps));
+      await addDoc(collection(db, "roadmaps"), newSavedRoadmap);
       toast({
         title: "Roadmap Saved!",
         description: "You can view your saved roadmaps on the 'Roadmaps' page.",

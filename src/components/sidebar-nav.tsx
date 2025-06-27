@@ -16,10 +16,14 @@ import {
   Users,
   Settings,
   Bot,
+  LogOut,
 } from "lucide-react"
-import { usePathname } from "next/navigation"
+import { usePathname, useRouter } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { signOut } from "firebase/auth"
+import { auth } from "@/lib/firebase"
+import { useToast } from "@/hooks/use-toast"
 
 const links = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -30,7 +34,34 @@ const links = [
 ]
 
 export function SidebarNav() {
-  const pathname = usePathname()
+  const pathname = usePathname();
+  const router = useRouter();
+  const { toast } = useToast();
+
+  const handleLogout = async () => {
+    if (!auth) {
+      toast({
+        title: "Error",
+        description: "Firebase is not configured.",
+        variant: "destructive",
+      });
+      return;
+    }
+    try {
+      await signOut(auth);
+      router.push('/login');
+      toast({
+        title: "Logged Out",
+        description: "You have been successfully logged out.",
+      });
+    } catch (error) {
+       toast({
+        title: "Error",
+        description: "Failed to log out. Please try again.",
+        variant: "destructive"
+      });
+    }
+  };
 
   return (
     <>
@@ -87,6 +118,14 @@ export function SidebarNav() {
                     <span>Settings</span>
                 </Link>
             </SidebarMenuButton>
+          </SidebarMenuItem>
+           <SidebarMenuItem>
+            <form action={handleLogout} className="w-full">
+                <SidebarMenuButton type="submit" className="w-full" tooltip={{ children: "Logout" }}>
+                    <LogOut />
+                    <span>Logout</span>
+                </SidebarMenuButton>
+            </form>
           </SidebarMenuItem>
         </SidebarMenu>
       </SidebarFooter>
