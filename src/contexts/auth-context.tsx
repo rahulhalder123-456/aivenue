@@ -1,8 +1,7 @@
 "use client";
 
-import { createContext, useContext, useEffect, useState, ReactNode } from 'react';
-import { onAuthStateChanged, User } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { createContext, useContext, ReactNode } from 'react';
+import type { User } from 'firebase/auth';
 
 interface AuthContextType {
   user: User | null;
@@ -11,30 +10,11 @@ interface AuthContextType {
 
 const AuthContext = createContext<AuthContextType>({
   user: null,
-  loading: true,
+  loading: false,
 });
 
 export function AuthProvider({ children }: { children: ReactNode }) {
-  const [user, setUser] = useState<User | null>(null);
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    // If Firebase is not configured, auth will be null.
-    // In this case, we stop loading and the user will be treated as logged out.
-    if (!auth) {
-      setLoading(false);
-      return;
-    }
-
-    const unsubscribe = onAuthStateChanged(auth, (user) => {
-      setUser(user);
-      setLoading(false);
-    });
-
-    return () => unsubscribe();
-  }, []);
-  
-  const value = { user, loading };
+  const value = { user: null, loading: false };
 
   return (
     <AuthContext.Provider value={value}>
