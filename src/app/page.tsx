@@ -29,12 +29,7 @@ export default function Home() {
           </Link>
           <div className="flex flex-1 items-center justify-end space-x-4">
             <nav className="flex items-center space-x-2">
-              <Button variant="ghost" asChild>
-                <Link href="/login">Sign In</Link>
-              </Button>
-              <Button asChild>
-                <Link href="/signup">Sign Up</Link>
-              </Button>
+              {/* Login and Signup buttons removed as requested */}
             </nav>
           </div>
         </div>
@@ -52,8 +47,8 @@ export default function Home() {
             </p>
             <div className="mt-8">
               <Button size="lg" asChild>
-                <Link href="/signup">
-                  Get Started for Free <ArrowRight className="ml-2 h-5 w-5" />
+                <Link href="/dashboard">
+                  Get Started <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
             </div>
