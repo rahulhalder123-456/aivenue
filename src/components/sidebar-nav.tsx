@@ -16,10 +16,12 @@ import {
   Users,
   Settings,
   Bot,
+  LogOut,
 } from "lucide-react"
 import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
+import { useAuth } from "@/contexts/auth-context"
 
 const links = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -31,6 +33,7 @@ const links = [
 
 export function SidebarNav() {
   const pathname = usePathname();
+  const { signOut } = useAuth();
 
   return (
     <>
@@ -86,6 +89,12 @@ export function SidebarNav() {
                     <Settings />
                     <span>Settings</span>
                 </Link>
+            </SidebarMenuButton>
+          </SidebarMenuItem>
+          <SidebarMenuItem>
+            <SidebarMenuButton onClick={signOut} tooltip={{ children: "Logout" }}>
+              <LogOut />
+              <span>Logout</span>
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>

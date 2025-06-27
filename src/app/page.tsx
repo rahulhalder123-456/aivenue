@@ -27,11 +27,14 @@ export default function Home() {
             </svg>
             <span className="font-bold">DevMap Pro</span>
           </Link>
-          <div className="flex flex-1 items-center justify-end space-x-4">
-            <nav className="flex items-center space-x-2">
-              {/* Login and Signup buttons removed as requested */}
-            </nav>
-          </div>
+          <nav className="flex flex-1 items-center justify-end space-x-2">
+            <Button variant="ghost" asChild>
+                <Link href="/login">Sign In</Link>
+            </Button>
+            <Button asChild>
+                <Link href="/signup">Sign Up</Link>
+            </Button>
+          </nav>
         </div>
       </header>
 
