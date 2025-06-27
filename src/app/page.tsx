@@ -4,8 +4,12 @@ import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { BrainCircuit, Bot, ArrowRight, Users, Check, Globe } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
+import { useAuth } from '@/contexts/auth-context';
+import { Skeleton } from '@/components/ui/skeleton';
 
 export default function Home() {
+  const { user, loading } = useAuth();
+
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -28,12 +32,25 @@ export default function Home() {
             <span className="font-bold">DevMap Pro</span>
           </Link>
           <nav className="flex flex-1 items-center justify-end space-x-2">
-            <Button variant="ghost" asChild>
-                <Link href="/login">Sign In</Link>
-            </Button>
-            <Button asChild>
-                <Link href="/signup">Sign Up</Link>
-            </Button>
+            {loading ? (
+                <>
+                    <Skeleton className="h-9 w-20" />
+                    <Skeleton className="h-9 w-20" />
+                </>
+            ) : user ? (
+                <Button asChild>
+                    <Link href="/dashboard">Dashboard</Link>
+                </Button>
+            ) : (
+                <>
+                    <Button variant="ghost" asChild>
+                        <Link href="/login">Sign In</Link>
+                    </Button>
+                    <Button asChild>
+                        <Link href="/signup">Sign Up</Link>
+                    </Button>
+                </>
+            )}
           </nav>
         </div>
       </header>
@@ -50,7 +67,7 @@ export default function Home() {
             </p>
             <div className="mt-8">
               <Button size="lg" asChild>
-                <Link href="/dashboard">
+                <Link href={user ? '/dashboard' : '/login'}>
                   Get Started <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
