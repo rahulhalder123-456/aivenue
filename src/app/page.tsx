@@ -2,10 +2,17 @@
 
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
-import { BrainCircuit, Bot, ArrowRight, Users, Check, Globe } from 'lucide-react';
+import { BrainCircuit, Bot, ArrowRight, Users, Check } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/auth-context';
 import { Skeleton } from '@/components/ui/skeleton';
+import dynamic from 'next/dynamic';
+
+const Globe3D = dynamic(() => import('@/components/ui/globe').then(m => m.Globe), {
+    ssr: false,
+    loading: () => <Skeleton className="h-64 w-full rounded-lg" />
+});
+
 
 export default function Home() {
   const { user, loading } = useAuth();
@@ -151,7 +158,7 @@ export default function Home() {
                                 </div>
                             </div>
                             <div className="mt-4 h-64 bg-secondary rounded-lg flex items-center justify-center">
-                                <Globe className="h-32 w-32 text-muted-foreground/50" data-ai-hint="world map" />
+                                <Globe3D />
                             </div>
                         </CardContent>
                     </Card>
@@ -160,7 +167,7 @@ export default function Home() {
         </section>
       </main>
 
-      <footer className="border-t">
+      <footer className="border-t mt-16">
         <div className="container py-6 text-center text-sm text-muted-foreground">
             <p>&copy; 2024 Aivenue. All rights reserved.</p>
         </div>

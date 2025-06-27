@@ -1,8 +1,8 @@
 
 "use client";
 
-import { useActionState, useEffect, useRef } from 'react';
-import { useFormStatus } from 'react-dom';
+import { useEffect, useRef } from 'react';
+import { useFormState, useFormStatus } from 'react-dom';
 import { generateRoadmapAction } from '@/app/actions';
 import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -244,7 +244,7 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
 
 
 export function RoadmapForm() {
-  const [state, formAction] = useActionState(generateRoadmapAction, { message: "", errors: {}, roadmap: null, careerPath: "", skillLevel: "" });
+  const [state, formAction] = useFormState(generateRoadmapAction, { message: "", errors: {}, roadmap: null, careerPath: "", skillLevel: "" });
   const resultRef = useRef<HTMLDivElement>(null);
   
   return (
