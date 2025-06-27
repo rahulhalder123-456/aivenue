@@ -14,12 +14,14 @@ export default function Home() {
   const router = useRouter();
 
   useEffect(() => {
+    // If the user is authenticated, redirect them to the dashboard.
     if (!loading && user) {
-      router.push('/dashboard');
+      router.replace('/dashboard');
     }
   }, [user, loading, router]);
 
-  if (loading) {
+  // While checking authentication, or if the user is logged in (before redirect), show a loading spinner.
+  if (loading || user) {
     return (
       <div className="flex h-screen items-center justify-center bg-background">
         <Loader2 className="h-8 w-8 animate-spin text-primary" />
@@ -27,11 +29,7 @@ export default function Home() {
     );
   }
 
-  // Only show the landing page if the user is not logged in
-  if (user) {
-    return null; // or a loading spinner, but the useEffect should have already redirected
-  }
-
+  // If authentication is done and there's no user, show the public landing page.
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
