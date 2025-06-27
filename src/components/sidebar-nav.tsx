@@ -36,7 +36,7 @@ export function SidebarNav() {
     <>
       <SidebarHeader>
         <div className="flex items-center gap-2">
-            <Button variant="ghost" size="icon" className="md:hidden">
+            <Button variant="ghost" size="icon" className="md:hidden" asChild>
                 <SidebarTrigger />
             </Button>
             <div className="flex items-center gap-2">
