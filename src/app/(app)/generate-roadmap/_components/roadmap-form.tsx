@@ -48,10 +48,16 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
   const handleSaveRoadmap = () => {
     if (!state.roadmap || !state.careerPath || !state.skillLevel) return;
 
+    const roadmapWithProgress = state.roadmap.map((phase: any) => ({
+      ...phase,
+      technologies: phase.technologies.map((tech: any) => ({ ...tech, completed: false })),
+      resources: phase.resources.map((res: any) => ({ ...res, completed: false })),
+    }));
+
     const newSavedRoadmap = {
       title: state.careerPath,
       description: `A personalized roadmap for a ${state.skillLevel} ${state.careerPath}.`,
-      roadmap: state.roadmap,
+      roadmap: roadmapWithProgress,
       createdAt: new Date().toISOString(),
     };
 
@@ -79,12 +85,12 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
         <CardContent className="p-6 space-y-6">
           <div className="space-y-2">
             <Label htmlFor="careerPath">Desired Career Path</Label>
-            <Input id="careerPath" name="careerPath" placeholder="e.g., Full-Stack Web Developer, DevOps Engineer" required />
+            <Input id="careerPath" name="careerPath" placeholder="e.g., Full-Stack Web Developer, DevOps Engineer" required defaultValue={state.careerPath || ""} />
             {state?.errors?.careerPath && <p className="text-sm font-medium text-destructive">{state.errors.careerPath[0]}</p>}
           </div>
           <div className="space-y-2">
             <Label>Current Skill Level</Label>
-            <Select name="skillLevel" required>
+            <Select name="skillLevel" required defaultValue={state.skillLevel || undefined}>
               <SelectTrigger id="skillLevel">
                 <SelectValue placeholder="Select your skill level" />
               </SelectTrigger>
