@@ -1,3 +1,5 @@
+"use client";
+
 import { RoadmapForm } from "./_components/roadmap-form";
 
 export default function GenerateRoadmapPage() {

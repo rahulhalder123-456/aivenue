@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useActionState, useEffect, useRef } from 'react';
@@ -9,7 +10,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Rocket, Sparkles, Loader2, Milestone, Lightbulb, Cpu, BookOpen, CheckCircle2, Bookmark, ExternalLink } from 'lucide-react';
-import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
@@ -18,11 +18,14 @@ import { useAuth } from '@/contexts/auth-context';
 import { db } from '@/lib/firebase';
 import { collection, addDoc, serverTimestamp } from 'firebase/firestore';
 
-
 function SubmitButton({ hasRoadmap }: { hasRoadmap: boolean }) {
     const { pending } = useFormStatus();
     return (
-        <Button type="submit" disabled={pending} className="w-full sm:w-auto">
+        <Button
+            type="submit"
+            disabled={pending}
+            className="w-full sm:w-auto"
+        >
             {pending ? (
                 <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
@@ -141,25 +144,20 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
       
       <div ref={resultRef} className="mt-8">
         {pending && (
-          <Card className="max-w-3xl animate-flip-in">
+          <Card className="max-w-3xl animate-in fade-in">
             <CardHeader>
-                <CardTitle className="flex items-center gap-2">
-                    <Loader2 className="h-6 w-6 animate-spin" /> 
-                    {state.roadmap ? 'Updating your roadmap...' : 'Generating your roadmap...'}
+                <CardTitle className="flex items-center gap-2 justify-center">
+                    {state.roadmap ? 'Updating your roadmap...' : 'Crafting your roadmap...'}
                 </CardTitle>
-                <CardDescription>This may take a few moments. Please don't close the page.</CardDescription>
+                <CardDescription className="text-center">The AI is thinking. This may take a few moments.</CardDescription>
             </CardHeader>
-            <CardContent>
-                <div className="space-y-4 pt-4">
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                    <Skeleton className="h-12 w-full" />
-                </div>
+            <CardContent className="h-64 flex items-center justify-center">
+                <Loader2 className="h-12 w-12 animate-spin text-primary" />
             </CardContent>
           </Card>
         )}
         {state.roadmap && !pending && (
-          <Card className="max-w-3xl animate-flip-in">
+          <Card className="max-w-3xl animate-in fade-in">
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <CardTitle className="flex items-center gap-2"><Rocket/> Your Personalized Roadmap</CardTitle>
@@ -246,7 +244,7 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
 
 
 export function RoadmapForm() {
-  const [state, formAction] = useActionState(generateRoadmapAction, { message: "", errors: {}, roadmap: null, careerPath: null, skillLevel: null });
+  const [state, formAction] = useActionState(generateRoadmapAction, { message: "", errors: {}, roadmap: null, careerPath: "", skillLevel: "" });
   const resultRef = useRef<HTMLDivElement>(null);
   
   return (

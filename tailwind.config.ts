@@ -95,15 +95,10 @@ export default {
             height: '0',
           },
         },
-        'flip-in': {
-          'from': { transform: 'rotateY(90deg) scale(0.9)', opacity: '0' },
-          'to': { transform: 'rotateY(0deg) scale(1)', opacity: '1' },
-        },
       },
       animation: {
         'accordion-down': 'accordion-down 0.2s ease-out',
         'accordion-up': 'accordion-up 0.2s ease-out',
-        'flip-in': 'flip-in 0.6s cubic-bezier(0.25, 0.46, 0.45, 0.94)',
       },
     },
   },

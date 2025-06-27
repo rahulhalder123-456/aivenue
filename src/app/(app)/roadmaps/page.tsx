@@ -11,7 +11,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/auth-context";
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs, doc, deleteDoc, updateDoc, orderBy } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface RoadmapItem {
@@ -52,10 +52,18 @@ export default function RoadmapsPage() {
     }
     setLoading(true);
     try {
-      const q = query(collection(db, "roadmaps"), where("userId", "==", user.uid), orderBy("createdAt", "desc"));
+      const q = query(collection(db, "roadmaps"), where("userId", "==", user.uid));
       const querySnapshot = await getDocs(q);
-      const roadmaps = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as SavedRoadmap));
-      setSavedRoadmaps(roadmaps);
+      const roadmapsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as SavedRoadmap));
+
+      // Sort on the client-side to ensure newest roadmaps appear first and avoid composite index requirement
+      roadmapsData.sort((a, b) => {
+        const timeA = a.createdAt && typeof a.createdAt.toDate === 'function' ? a.createdAt.toDate().getTime() : 0;
+        const timeB = b.createdAt && typeof b.createdAt.toDate === 'function' ? b.createdAt.toDate().getTime() : 0;
+        return timeB - timeA;
+      });
+
+      setSavedRoadmaps(roadmapsData);
     } catch (error) {
       console.error("Failed to load roadmaps:", error);
       toast({ title: "Error", description: "Could not fetch your roadmaps.", variant: "destructive" });
