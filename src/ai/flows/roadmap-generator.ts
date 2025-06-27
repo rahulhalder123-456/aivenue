@@ -18,15 +18,25 @@ const RoadmapGeneratorInputSchema = z.object({
     .string()
     .describe("The desired career path (e.g., 'Full-Stack Web Developer')."),
   skillLevel: z.string().describe("The current skill level (e.g., 'Beginner')."),
-  existingRoadmap: z.string().optional().describe("The existing roadmap in JSON format to be updated."),
-  updateRequest: z.string().optional().describe("User's request to update the roadmap."),
+  existingRoadmap: z
+    .string()
+    .optional()
+    .describe(
+      'An existing roadmap in JSON format to be updated. This field should only be present if the user is updating a roadmap.'
+    ),
+  updateRequest: z
+    .string()
+    .optional()
+    .describe(
+      "A user's request to update or refine the roadmap. This field should only be present if the user is updating a roadmap."
+    ),
 });
 export type RoadmapGeneratorInput = z.infer<typeof RoadmapGeneratorInputSchema>;
 
 const RoadmapModuleItemSchema = z.object({
   title: z.string().describe('The title of the item (e.g., a technology, skill, or resource name).'),
   description: z.string().describe('A brief description of the item, explaining its relevance to the desired career path.'),
-  url: z.string().url().optional().or(z.literal("")).describe('A URL to a relevant resource, if applicable.'),
+  url: z.string().optional().describe('A URL to a relevant resource, if applicable.'),
 });
 
 const RoadmapPhaseSchema = z.object({
