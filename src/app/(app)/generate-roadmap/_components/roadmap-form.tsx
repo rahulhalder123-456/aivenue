@@ -1,6 +1,7 @@
 "use client";
 
-import { useActionState, useFormStatus } from 'react';
+import { useActionState, useEffect, useRef } from 'react';
+import { useFormStatus } from 'react-dom';
 import { generateRoadmapAction } from '@/app/actions';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -8,7 +9,6 @@ import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
 import { Rocket, Sparkles, Loader2 } from 'lucide-react';
-import { useEffect, useRef } from 'react';
 import { Skeleton } from '@/components/ui/skeleton';
 
 function SubmitButton() {
@@ -30,47 +30,44 @@ function SubmitButton() {
     );
 }
 
-export function RoadmapForm() {
-  const [state, formAction] = useActionState(generateRoadmapAction, { message: "", errors: {}, roadmap: null });
-  const resultRef = useRef<HTMLDivElement>(null);
+function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.RefObject<HTMLDivElement> }) {
   const { pending } = useFormStatus();
 
   useEffect(() => {
     if (state.message === "Success" && resultRef.current) {
       resultRef.current.scrollIntoView({ behavior: 'smooth' });
     }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.message, state.roadmap]);
-  
+
   return (
     <>
-      <form action={formAction}>
-          <Card className="max-w-3xl">
-            <CardContent className="p-6 space-y-6">
-              <div className="space-y-2">
-                <Label htmlFor="careerPath">Desired Career Path</Label>
-                <Input id="careerPath" name="careerPath" placeholder="e.g., Full-Stack Web Developer, DevOps Engineer" required />
-                {state?.errors?.careerPath && <p className="text-sm font-medium text-destructive">{state.errors.careerPath[0]}</p>}
-              </div>
-              <div className="space-y-2">
-                <Label>Current Skill Level</Label>
-                <Select name="skillLevel" required>
-                  <SelectTrigger id="skillLevel">
-                    <SelectValue placeholder="Select your skill level" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="Beginner">Beginner</SelectItem>
-                    <SelectItem value="Intermediate">Intermediate</SelectItem>
-                    <SelectItem value="Advanced">Advanced</SelectItem>
-                  </SelectContent>
-                </Select>
-                 {state?.errors?.skillLevel && <p className="text-sm font-medium text-destructive">{state.errors.skillLevel[0]}</p>}
-              </div>
-            </CardContent>
-            <CardFooter>
-              <SubmitButton />
-            </CardFooter>
-          </Card>
-      </form>
+      <Card className="max-w-3xl">
+        <CardContent className="p-6 space-y-6">
+          <div className="space-y-2">
+            <Label htmlFor="careerPath">Desired Career Path</Label>
+            <Input id="careerPath" name="careerPath" placeholder="e.g., Full-Stack Web Developer, DevOps Engineer" required />
+            {state?.errors?.careerPath && <p className="text-sm font-medium text-destructive">{state.errors.careerPath[0]}</p>}
+          </div>
+          <div className="space-y-2">
+            <Label>Current Skill Level</Label>
+            <Select name="skillLevel" required>
+              <SelectTrigger id="skillLevel">
+                <SelectValue placeholder="Select your skill level" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="Beginner">Beginner</SelectItem>
+                <SelectItem value="Intermediate">Intermediate</SelectItem>
+                <SelectItem value="Advanced">Advanced</SelectItem>
+              </SelectContent>
+            </Select>
+             {state?.errors?.skillLevel && <p className="text-sm font-medium text-destructive">{state.errors.skillLevel[0]}</p>}
+          </div>
+        </CardContent>
+        <CardFooter>
+          <SubmitButton />
+        </CardFooter>
+      </Card>
       
       <div ref={resultRef} className="mt-8">
         {pending && (
@@ -98,5 +95,17 @@ export function RoadmapForm() {
         )}
       </div>
     </>
+  );
+}
+
+
+export function RoadmapForm() {
+  const [state, formAction] = useActionState(generateRoadmapAction, { message: "", errors: {}, roadmap: null });
+  const resultRef = useRef<HTMLDivElement>(null);
+  
+  return (
+    <form action={formAction}>
+      <RoadmapFormBody state={state} resultRef={resultRef} />
+    </form>
   );
 }
