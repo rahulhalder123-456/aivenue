@@ -12,6 +12,7 @@ import { Rocket, Sparkles, Loader2, Milestone, Lightbulb, Cpu, BookOpen, CheckCi
 import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import Link from 'next/link';
+import { useToast } from '@/hooks/use-toast';
 
 
 function SubmitButton() {
@@ -35,6 +36,7 @@ function SubmitButton() {
 
 function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.RefObject<HTMLDivElement> }) {
   const { pending } = useFormStatus();
+  const { toast } = useToast();
 
   useEffect(() => {
     if (state.message === "Success" && resultRef.current) {
@@ -42,6 +44,34 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [state.message, state.roadmap]);
+
+  const handleSaveRoadmap = () => {
+    if (!state.roadmap || !state.careerPath || !state.skillLevel) return;
+
+    const newSavedRoadmap = {
+      title: state.careerPath,
+      description: `A personalized roadmap for a ${state.skillLevel} ${state.careerPath}.`,
+      roadmap: state.roadmap,
+      createdAt: new Date().toISOString(),
+    };
+
+    try {
+      const savedRoadmaps = JSON.parse(localStorage.getItem('savedRoadmaps') || '[]');
+      savedRoadmaps.push(newSavedRoadmap);
+      localStorage.setItem('savedRoadmaps', JSON.stringify(savedRoadmaps));
+      toast({
+        title: "Roadmap Saved!",
+        description: "You can view your saved roadmaps on the 'Roadmaps' page.",
+      });
+    } catch (error) {
+      console.error("Failed to save roadmap:", error);
+      toast({
+        title: "Error",
+        description: "Failed to save the roadmap. Please try again.",
+        variant: "destructive",
+      });
+    }
+  };
 
   return (
     <>
@@ -96,7 +126,13 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
         {state.roadmap && (
           <Card className="max-w-3xl animate-in fade-in-50">
             <CardHeader>
-              <CardTitle className="flex items-center gap-2"><Rocket/> Your Personalized Roadmap</CardTitle>
+              <div className="flex items-center justify-between">
+                <CardTitle className="flex items-center gap-2"><Rocket/> Your Personalized Roadmap</CardTitle>
+                <Button variant="outline" size="icon" onClick={handleSaveRoadmap}>
+                  <Bookmark className="h-4 w-4" />
+                  <span className="sr-only">Save Roadmap</span>
+                </Button>
+              </div>
             </CardHeader>
             <CardContent>
               <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
@@ -175,7 +211,7 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
 
 
 export function RoadmapForm() {
-  const [state, formAction] = useActionState(generateRoadmapAction, { message: "", errors: {}, roadmap: null });
+  const [state, formAction] = useActionState(generateRoadmapAction, { message: "", errors: {}, roadmap: null, careerPath: null, skillLevel: null });
   const resultRef = useRef<HTMLDivElement>(null);
   
   return (

@@ -25,7 +25,13 @@ export async function generateRoadmapAction(prevState: any, formData: FormData) 
 
   try {
     const result = await generateRoadmap(validatedFields.data as RoadmapGeneratorInput);
-    return { message: 'Success', roadmap: result.roadmap, errors: {} };
+    return { 
+      message: 'Success', 
+      roadmap: result.roadmap, 
+      errors: {},
+      careerPath: validatedFields.data.careerPath,
+      skillLevel: validatedFields.data.skillLevel,
+    };
   } catch (error) {
     console.error(error);
     return { message: 'An error occurred while generating the roadmap.', roadmap: null, errors: {} };
