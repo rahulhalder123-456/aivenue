@@ -4,7 +4,7 @@ import { Toaster } from "@/components/ui/toaster";
 import { Providers } from '@/components/providers';
 
 export const metadata: Metadata = {
-  title: 'DevMap Pro',
+  title: 'Aivenue',
   description: 'Your ultimate developer roadmap tool.',
 };
 

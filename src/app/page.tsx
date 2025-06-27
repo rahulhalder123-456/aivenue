@@ -29,7 +29,7 @@ export default function Home() {
               <path d="M2 17l10 5 10-5" />
               <path d="M2 12l10 5 10-5" />
             </svg>
-            <span className="font-bold">DevMap Pro</span>
+            <span className="font-bold">Aivenue</span>
           </Link>
           <nav className="flex flex-1 items-center justify-end space-x-2">
             {loading ? (
@@ -63,11 +63,11 @@ export default function Home() {
               Build Your Developer Career with AI-Powered Roadmaps
             </h1>
             <p className="mt-4 max-w-2xl mx-auto text-lg text-muted-foreground">
-              Stop guessing. Start building. DevMap Pro creates personalized, step-by-step learning paths to help you achieve your career goals faster.
+              Stop guessing. Start building. Aivenue creates personalized, step-by-step learning paths to help you achieve your career goals faster.
             </p>
             <div className="mt-8">
               <Button size="lg" asChild>
-                <Link href={user ? '/dashboard' : '/login'}>
+                <Link href={user ? '/dashboard' : '/signup'}>
                   Get Started <ArrowRight className="ml-2 h-5 w-5" />
                 </Link>
               </Button>
@@ -120,7 +120,7 @@ export default function Home() {
                 <div className="grid gap-8 md:grid-cols-2 items-center">
                     <div>
                         <h2 className="text-3xl font-bold tracking-tight font-headline">Join a Thriving Community of Learners</h2>
-                        <p className="mt-4 text-lg text-muted-foreground">You're not alone. Thousands of developers are using DevMap Pro to level up their skills and advance their careers.</p>
+                        <p className="mt-4 text-lg text-muted-foreground">You're not alone. Thousands of developers are using Aivenue to level up their skills and advance their careers.</p>
                         <ul className="mt-6 space-y-4">
                            <li className="flex items-start">
                                 <Check className="h-6 w-6 text-primary mr-3 mt-1 flex-shrink-0" />
@@ -162,7 +162,7 @@ export default function Home() {
 
       <footer className="border-t">
         <div className="container py-6 text-center text-sm text-muted-foreground">
-            <p>&copy; 2024 DevMap Pro. All rights reserved.</p>
+            <p>&copy; 2024 Aivenue. All rights reserved.</p>
         </div>
       </footer>
     </div>

@@ -57,7 +57,7 @@ export function SidebarNav() {
                     <path d="M2 17l10 5 10-5" />
                     <path d="M2 12l10 5 10-5" />
                 </svg>
-                <h1 className="text-lg font-semibold font-headline">DevMap Pro</h1>
+                 <h1 className="text-lg font-semibold font-headline">Aivenue</h1>
             </div>
         </div>
       </SidebarHeader>

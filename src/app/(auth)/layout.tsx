@@ -46,7 +46,7 @@ export default function AuthLayout({
                     <path d="M2 17l10 5 10-5" />
                     <path d="M2 12l10 5 10-5" />
                 </svg>
-                <span className="text-2xl font-bold">DevMap Pro</span>
+                <span className="text-2xl font-bold">Aivenue</span>
             </Link>
         </div>
         {children}
