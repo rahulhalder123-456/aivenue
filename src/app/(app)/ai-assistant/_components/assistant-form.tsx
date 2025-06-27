@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormState } from 'react-dom';
+import { useActionState } from 'react';
 import { askAiAssistantAction } from '@/app/actions';
 import { Button } from '@/components/ui/button';
 import { Textarea } from '@/components/ui/textarea';
@@ -15,7 +15,7 @@ interface Message {
 }
 
 export function AssistantForm() {
-    const [state, formAction] = useFormState(askAiAssistantAction, { message: "", errors: {}, answer: null });
+    const [state, formAction] = useActionState(askAiAssistantAction, { message: "", errors: {}, answer: null });
     const [messages, setMessages] = useState<Message[]>([]);
     const [isPending, startTransition] = useTransition();
     const formRef = useRef<HTMLFormElement>(null);

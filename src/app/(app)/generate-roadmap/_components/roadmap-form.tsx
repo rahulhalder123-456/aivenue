@@ -1,6 +1,6 @@
 "use client";
 
-import { useFormState, useFormStatus } from 'react-dom';
+import { useActionState, useFormStatus } from 'react';
 import { generateRoadmapAction } from '@/app/actions';
 import { Card, CardContent, CardFooter } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
@@ -31,7 +31,7 @@ function SubmitButton() {
 }
 
 export function RoadmapForm() {
-  const [state, formAction] = useFormState(generateRoadmapAction, { message: "", errors: {}, roadmap: null });
+  const [state, formAction] = useActionState(generateRoadmapAction, { message: "", errors: {}, roadmap: null });
   const resultRef = useRef<HTMLDivElement>(null);
   const { pending } = useFormStatus();
 
