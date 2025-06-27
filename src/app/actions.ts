@@ -12,19 +12,20 @@ const roadmapSchema = z.object({
 });
 
 export async function generateRoadmapAction(prevState: any, formData: FormData) {
-  const validatedFields = roadmapSchema.safeParse({
+  const rawData = {
     careerPath: formData.get('careerPath'),
     skillLevel: formData.get('skillLevel'),
     updateRequest: formData.get('updateRequest'),
     existingRoadmap: formData.get('existingRoadmap'),
-  });
+  };
+  const validatedFields = roadmapSchema.safeParse(rawData);
 
   if (!validatedFields.success) {
     return {
       roadmap: prevState.roadmap,
-      careerPath: prevState.careerPath,
-      skillLevel: prevState.skillLevel,
-      message: 'Invalid form data.',
+      careerPath: rawData.careerPath,
+      skillLevel: rawData.skillLevel,
+      message: '',
       errors: validatedFields.error.flatten().fieldErrors,
     };
   }
@@ -51,8 +52,8 @@ export async function generateRoadmapAction(prevState: any, formData: FormData) 
     console.error(error);
     return { 
         roadmap: prevState.roadmap,
-        careerPath: prevState.careerPath,
-        skillLevel: prevState.skillLevel,
+        careerPath: rawData.careerPath,
+        skillLevel: rawData.skillLevel,
         message: 'An error occurred while generating the roadmap.',
         errors: {}
     };
