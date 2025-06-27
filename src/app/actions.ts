@@ -12,19 +12,14 @@ const roadmapSchema = z.object({
 });
 
 export async function generateRoadmapAction(prevState: any, formData: FormData) {
-  const rawData = {
-    careerPath: formData.get('careerPath'),
-    skillLevel: formData.get('skillLevel'),
-    updateRequest: formData.get('updateRequest'),
-    existingRoadmap: formData.get('existingRoadmap'),
-  };
-  const validatedFields = roadmapSchema.safeParse(rawData);
+  const formDataObj = Object.fromEntries(formData.entries());
+  const validatedFields = roadmapSchema.safeParse(formDataObj);
 
   if (!validatedFields.success) {
     return {
       roadmap: prevState.roadmap,
-      careerPath: rawData.careerPath,
-      skillLevel: rawData.skillLevel,
+      careerPath: formDataObj.careerPath as string,
+      skillLevel: formDataObj.skillLevel as string,
       message: '',
       errors: validatedFields.error.flatten().fieldErrors,
     };
@@ -36,7 +31,7 @@ export async function generateRoadmapAction(prevState: any, formData: FormData) 
         // The AI expects a plain object, not a stringified one.
         // Let's parse it back. The schema in the flow expects a string,
         // but it's really just for type checking on the prompt side.
-        // Let's adjust the flow to expect an object. No, let's keep it simple.
+        // Let's keep it simple.
         // The prompt template will receive it as a string and that's fine.
     }
 
@@ -52,8 +47,8 @@ export async function generateRoadmapAction(prevState: any, formData: FormData) 
     console.error(error);
     return { 
         roadmap: prevState.roadmap,
-        careerPath: rawData.careerPath,
-        skillLevel: rawData.skillLevel,
+        careerPath: formDataObj.careerPath as string,
+        skillLevel: formDataObj.skillLevel as string,
         message: 'An error occurred while generating the roadmap.',
         errors: {}
     };
@@ -66,9 +61,8 @@ const assistantSchema = z.object({
 });
 
 export async function askAiAssistantAction(prevState: any, formData: FormData) {
-    const validatedFields = assistantSchema.safeParse({
-        question: formData.get('question'),
-    });
+    const formDataObj = Object.fromEntries(formData.entries());
+    const validatedFields = assistantSchema.safeParse(formDataObj);
 
     if (!validatedFields.success) {
         return {
