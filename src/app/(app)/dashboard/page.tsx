@@ -1,9 +1,55 @@
+"use client";
+
+import { useEffect, useState } from "react";
+import { useAuth } from "@/contexts/auth-context";
+import { db } from "@/lib/firebase";
+import { doc, getDoc } from "firebase/firestore";
+import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardContent, CardHeader, CardTitle, CardDescription } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
 import { ArrowRight, Bot, BrainCircuit, Network } from "lucide-react";
 import Link from "next/link";
 
+interface UserData {
+  overallProgress: number;
+  completedMilestones: number;
+  aiAssistantQueries: number;
+  activeStreak: number;
+}
+
 export default function DashboardPage() {
+  const { user } = useAuth();
+  const [userData, setUserData] = useState<UserData | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  useEffect(() => {
+    const fetchUserData = async () => {
+        if (user && db) {
+            setLoading(true);
+            try {
+                const userDocRef = doc(db, 'users', user.uid);
+                const docSnap = await getDoc(userDocRef);
+                if (docSnap.exists()) {
+                    setUserData(docSnap.data() as UserData);
+                } else {
+                    // This case is handled by ensureUserDocument on login/signup,
+                    // but as a fallback, set default data.
+                    setUserData({ overallProgress: 0, completedMilestones: 0, aiAssistantQueries: 0, activeStreak: 0 });
+                }
+            } catch (error) {
+                console.error("Error fetching user data:", error);
+                setUserData({ overallProgress: 0, completedMilestones: 0, aiAssistantQueries: 0, activeStreak: 0 });
+            } finally {
+                setLoading(false);
+            }
+        } else if (!user) {
+            setLoading(false);
+        }
+    };
+
+    fetchUserData();
+  }, [user]);
+
   return (
     <div className="flex-1 space-y-4 p-4 md:p-8 pt-6">
       <div className="flex items-center justify-between space-y-2">
@@ -19,9 +65,9 @@ export default function DashboardPage() {
             <Network className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">75%</div>
+            {loading ? <Skeleton className="h-7 w-1/4 mt-1" /> : <div className="text-2xl font-bold">{userData?.overallProgress || 0}%</div>}
             <p className="text-xs text-muted-foreground">
-              +20.1% from last month
+              Across all your roadmaps
             </p>
           </CardContent>
         </Card>
@@ -33,9 +79,9 @@ export default function DashboardPage() {
             <BrainCircuit className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">+12</div>
+            {loading ? <Skeleton className="h-7 w-1/4 mt-1" /> : <div className="text-2xl font-bold">+{userData?.completedMilestones || 0}</div>}
             <p className="text-xs text-muted-foreground">
-              on the Full-Stack roadmap
+              Across all your roadmaps
             </p>
           </CardContent>
         </Card>
@@ -47,9 +93,9 @@ export default function DashboardPage() {
             <Bot className="h-4 w-4 text-muted-foreground" />
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">5 Queries</div>
+            {loading ? <Skeleton className="h-7 w-2/4 mt-1" /> : <div className="text-2xl font-bold">{userData?.aiAssistantQueries || 0} Queries</div>}
             <p className="text-xs text-muted-foreground">
-              in the last 24 hours
+              Total queries made
             </p>
           </CardContent>
         </Card>
@@ -72,7 +118,7 @@ export default function DashboardPage() {
             </svg>
           </CardHeader>
           <CardContent>
-            <div className="text-2xl font-bold">3 Days</div>
+            {loading ? <Skeleton className="h-7 w-2/4 mt-1" /> : <div className="text-2xl font-bold">{userData?.activeStreak || 0} Days</div>}
             <p className="text-xs text-muted-foreground">
               Keep up the great work!
             </p>
@@ -106,7 +152,7 @@ export default function DashboardPage() {
                 <p className="text-sm text-muted-foreground">Master deployment, automation, and infrastructure.</p>
               </div>
               <Button asChild variant="ghost" size="sm">
-                <Link href="#">
+                <Link href="/roadmaps">
                   View <ArrowRight className="ml-2 h-4 w-4" />
                 </Link>
               </Button>

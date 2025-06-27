@@ -2,8 +2,9 @@
 
 import { useState } from 'react';
 import { useRouter } from 'next/navigation';
-import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider } from 'firebase/auth';
-import { auth } from '@/lib/firebase';
+import { signInWithEmailAndPassword, signInWithPopup, GoogleAuthProvider, type User } from 'firebase/auth';
+import { auth, db } from '@/lib/firebase';
+import { doc, getDoc, setDoc, serverTimestamp } from 'firebase/firestore';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
@@ -20,6 +21,31 @@ function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
         </svg>
     )
 }
+
+const ensureUserDocument = async (user: User) => {
+    if (!db || !user) return;
+    const userRef = doc(db, 'users', user.uid);
+    const docSnap = await getDoc(userRef);
+
+    if (!docSnap.exists()) {
+        try {
+            await setDoc(userRef, {
+                email: user.email,
+                displayName: user.displayName || user.email?.split('@')[0] || 'Anonymous User',
+                photoURL: user.photoURL || '',
+                createdAt: serverTimestamp(),
+                overallProgress: 0,
+                completedMilestones: 0,
+                aiAssistantQueries: 0,
+                activeStreak: 1,
+                lastLoginDate: serverTimestamp(),
+            });
+        } catch (error) {
+            console.error("Error creating user document:", error);
+        }
+    }
+};
+
 
 export default function LoginPage() {
   const [email, setEmail] = useState('');
@@ -39,7 +65,8 @@ export default function LoginPage() {
         return;
     }
     try {
-      await signInWithEmailAndPassword(auth, email, password);
+      const userCredential = await signInWithEmailAndPassword(auth, email, password);
+      await ensureUserDocument(userCredential.user);
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.message);
@@ -58,7 +85,8 @@ export default function LoginPage() {
     }
     const provider = new GoogleAuthProvider();
     try {
-      await signInWithPopup(auth, provider);
+      const result = await signInWithPopup(auth, provider);
+      await ensureUserDocument(result.user);
       router.push('/dashboard');
     } catch (err: any) {
       setError(err.message);
