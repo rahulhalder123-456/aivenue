@@ -1,3 +1,4 @@
+
 // roadmap-generator.ts
 'use server';
 
@@ -22,7 +23,7 @@ export type RoadmapGeneratorInput = z.infer<typeof RoadmapGeneratorInputSchema>;
 
 const RoadmapModuleItemSchema = z.object({
   title: z.string().describe('The title of the item (e.g., a technology, skill, or resource name).'),
-  description: z.string().describe('A brief description of the item.'),
+  description: z.string().describe('A brief description of the item, explaining its relevance to the desired career path.'),
   url: z.string().optional().describe('A URL to a relevant resource, if applicable.'),
 });
 
@@ -50,6 +51,8 @@ const prompt = ai.definePrompt({
   prompt: `You are an AI career coach who helps people create personalized roadmaps to achieve their desired career path.
 
 You will take the user's desired career path and current skill level, and generate a structured, multi-phase roadmap. For each phase, provide a title, duration, goal, and lists of technologies/skills and learning resources.
+
+For each technology and resource, make sure the description clearly explains why it's relevant to the specified career path. For example, if the career path is Cybersecurity, and a technology is HTML, explain how knowing HTML is important for web vulnerability analysis.
 
 Desired Career Path: {{{careerPath}}}
 Current Skill Level: {{{skillLevel}}}
