@@ -130,7 +130,7 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
       
       <div ref={resultRef} className="mt-8">
         {pending && (
-          <Card className="max-w-3xl animate-in fade-in duration-500">
+          <Card className="max-w-3xl animate-flip-in">
             <CardHeader>
                 <CardTitle className="flex items-center gap-2">
                     <Loader2 className="h-6 w-6 animate-spin" /> 
@@ -148,7 +148,7 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
           </Card>
         )}
         {state.roadmap && !pending && (
-          <Card className="max-w-3xl animate-in fade-in slide-in-from-top-5 duration-500">
+          <Card className="max-w-3xl animate-flip-in">
             <CardHeader>
               <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <CardTitle className="flex items-center gap-2"><Rocket/> Your Personalized Roadmap</CardTitle>
