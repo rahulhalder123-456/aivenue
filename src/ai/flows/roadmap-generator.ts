@@ -18,13 +18,15 @@ const RoadmapGeneratorInputSchema = z.object({
     .string()
     .describe("The desired career path (e.g., 'Full-Stack Web Developer')."),
   skillLevel: z.string().describe("The current skill level (e.g., 'Beginner')."),
+  existingRoadmap: z.string().optional().describe("The existing roadmap in JSON format to be updated."),
+  updateRequest: z.string().optional().describe("User's request to update the roadmap."),
 });
 export type RoadmapGeneratorInput = z.infer<typeof RoadmapGeneratorInputSchema>;
 
 const RoadmapModuleItemSchema = z.object({
   title: z.string().describe('The title of the item (e.g., a technology, skill, or resource name).'),
   description: z.string().describe('A brief description of the item, explaining its relevance to the desired career path.'),
-  url: z.string().optional().describe('A URL to a relevant resource, if applicable.'),
+  url: z.string().url().optional().or(z.literal("")).describe('A URL to a relevant resource, if applicable.'),
 });
 
 const RoadmapPhaseSchema = z.object({
@@ -50,6 +52,21 @@ const prompt = ai.definePrompt({
   output: {schema: RoadmapGeneratorOutputSchema},
   prompt: `You are an AI career coach who helps people create personalized roadmaps to achieve their desired career path.
 
+{{#if updateRequest}}
+You have been asked to update an existing learning roadmap based on a user's request. Modify the roadmap based on the request, keeping the overall structure and format. Ensure the updated roadmap still aligns with the user's career path and skill level. All learning resources provided must be free.
+
+For each technology and resource, make sure the description clearly explains why it's relevant to the specified career path.
+
+Original Career Path: {{{careerPath}}}
+Original Skill Level: {{{skillLevel}}}
+
+Original Roadmap (in JSON format):
+{{{existingRoadmap}}}
+
+User's update request: {{{updateRequest}}}
+
+Generate the new, updated roadmap.
+{{else}}
 You will take the user's desired career path and current skill level, and generate a structured, multi-phase roadmap. For each phase, provide a title, duration, goal, and lists of technologies/skills and learning resources. All learning resources provided must be free.
 
 For each technology and resource, make sure the description clearly explains why it's relevant to the specified career path. For example, if the career path is Cybersecurity, and a technology is HTML, explain how knowing HTML is important for web vulnerability analysis.
@@ -57,7 +74,8 @@ For each technology and resource, make sure the description clearly explains why
 Desired Career Path: {{{careerPath}}}
 Current Skill Level: {{{skillLevel}}}
 
-Generate the roadmap.`,
+Generate the roadmap.
+{{/if}}`,
 });
 
 const generateRoadmapFlow = ai.defineFlow(

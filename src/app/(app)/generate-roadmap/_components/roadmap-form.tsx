@@ -13,21 +13,22 @@ import { Skeleton } from '@/components/ui/skeleton';
 import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
 import Link from 'next/link';
 import { useToast } from '@/hooks/use-toast';
+import { Textarea } from '@/components/ui/textarea';
 
 
-function SubmitButton() {
+function SubmitButton({ hasRoadmap }: { hasRoadmap: boolean }) {
     const { pending } = useFormStatus();
     return (
-        <Button type="submit" disabled={pending}>
+        <Button type="submit" disabled={pending} className="w-full sm:w-auto">
             {pending ? (
                 <>
                     <Loader2 className="mr-2 h-4 w-4 animate-spin" />
-                    Generating...
+                    {hasRoadmap ? 'Updating...' : 'Generating...'}
                 </>
             ) : (
                 <>
                     <Sparkles className="mr-2 h-4 w-4" />
-                    Generate Roadmap
+                    {hasRoadmap ? 'Update Roadmap' : 'Generate Roadmap'}
                 </>
             )}
         </Button>
@@ -37,13 +38,17 @@ function SubmitButton() {
 function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.RefObject<HTMLDivElement> }) {
   const { pending } = useFormStatus();
   const { toast } = useToast();
+  const updateRequestRef = useRef<HTMLTextAreaElement>(null);
 
   useEffect(() => {
     if (state.message === "Success" && resultRef.current) {
       resultRef.current.scrollIntoView({ behavior: 'smooth' });
+      if (updateRequestRef.current) {
+        updateRequestRef.current.value = '';
+      }
     }
   // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [state.message, state.roadmap]);
+  }, [state.roadmap]); // Depend on roadmap to run on new generation/update
 
   const handleSaveRoadmap = () => {
     if (!state.roadmap || !state.careerPath || !state.skillLevel) return;
@@ -102,41 +107,54 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
             </Select>
              {state?.errors?.skillLevel && <p className="text-sm font-medium text-destructive">{state.errors.skillLevel[0]}</p>}
           </div>
+          {state.roadmap && (
+             <div className="space-y-2 pt-4 animate-in fade-in-50">
+                <Label htmlFor="updateRequest" className="text-base font-semibold">Refine Your Roadmap</Label>
+                <p className="text-sm text-muted-foreground">
+                    Not quite right? Tell the AI what you'd like to change, add, or remove.
+                </p>
+                <Textarea
+                    id="updateRequest"
+                    name="updateRequest"
+                    ref={updateRequestRef}
+                    placeholder="e.g., 'Focus more on backend technologies', 'Add more resources for UI/UX design', 'Is Kubernetes relevant for this path?'"
+                />
+                <input type="hidden" name="existingRoadmap" value={JSON.stringify(state.roadmap)} />
+            </div>
+          )}
         </CardContent>
         <CardFooter>
-          <SubmitButton />
+          <SubmitButton hasRoadmap={!!state.roadmap} />
         </CardFooter>
       </Card>
       
       <div ref={resultRef} className="mt-8">
         {pending && (
           <Card className="max-w-3xl">
-            <CardContent className="p-6">
-                <div className="space-y-4">
-                    <div className="flex items-center gap-4">
-                        <Skeleton className="h-12 w-12 rounded-full" />
-                        <div className="space-y-2">
-                            <Skeleton className="h-6 w-48" />
-                            <Skeleton className="h-4 w-32" />
-                        </div>
-                    </div>
-                    <div className="pl-16 space-y-4">
-                        <Skeleton className="h-4 w-full" />
-                        <Skeleton className="h-4 w-3/4" />
-                        <Skeleton className="h-4 w-full" />
-                    </div>
+            <CardHeader>
+                <CardTitle className="flex items-center gap-2">
+                    <Loader2 className="h-6 w-6 animate-spin" /> 
+                    {state.roadmap ? 'Updating your roadmap...' : 'Generating your roadmap...'}
+                </CardTitle>
+                <CardDescription>This may take a few moments. Please don't close the page.</CardDescription>
+            </CardHeader>
+            <CardContent>
+                <div className="space-y-4 pt-4">
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
+                    <Skeleton className="h-12 w-full" />
                 </div>
             </CardContent>
           </Card>
         )}
-        {state.roadmap && (
+        {state.roadmap && !pending && (
           <Card className="max-w-3xl animate-in fade-in-50">
             <CardHeader>
-              <div className="flex items-center justify-between">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                 <CardTitle className="flex items-center gap-2"><Rocket/> Your Personalized Roadmap</CardTitle>
-                <Button variant="outline" size="icon" onClick={handleSaveRoadmap} type="button">
-                  <Bookmark className="h-4 w-4" />
-                  <span className="sr-only">Save Roadmap</span>
+                <Button variant="outline" size="sm" onClick={handleSaveRoadmap} type="button">
+                  <Bookmark className="h-4 w-4 mr-2" />
+                  Save Roadmap
                 </Button>
               </div>
             </CardHeader>
