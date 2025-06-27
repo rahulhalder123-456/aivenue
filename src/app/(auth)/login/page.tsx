@@ -69,7 +69,13 @@ export default function LoginPage() {
       await ensureUserDocument(userCredential.user);
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.message);
+      // Generic error for login failures to prevent user enumeration
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/user-not-found' || err.code === 'auth/wrong-password') {
+         setError('Invalid email or password. Please try again.');
+      } else {
+        console.error("Login error:", err);
+        setError('An unexpected error occurred. Please try again.');
+      }
     } finally {
       setLoading(false);
     }
@@ -89,7 +95,8 @@ export default function LoginPage() {
       await ensureUserDocument(result.user);
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.message);
+      console.error("Google Sign-In error:", err);
+      setError('Failed to sign in with Google. Please try again.');
     } finally {
       setLoading(false);
     }

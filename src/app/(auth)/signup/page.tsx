@@ -67,7 +67,14 @@ export default function SignupPage() {
       await ensureUserDocument(userCredential.user);
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.message);
+        if (err.code === 'auth/email-already-in-use') {
+            setError('This email address is already taken.');
+        } else if (err.code === 'auth/weak-password') {
+            setError('Password should be at least 6 characters long.');
+        } else {
+            console.error("Signup error:", err);
+            setError('An unexpected error occurred. Please try again.');
+        }
     } finally {
         setLoading(false);
     }
@@ -87,7 +94,8 @@ export default function SignupPage() {
       await ensureUserDocument(result.user);
       router.push('/dashboard');
     } catch (err: any) {
-      setError(err.message);
+      console.error("Google Sign-In error:", err);
+      setError('Failed to sign up with Google. Please try again.');
     } finally {
         setLoading(false);
     }
