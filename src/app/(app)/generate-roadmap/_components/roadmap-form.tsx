@@ -128,7 +128,7 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
             <CardHeader>
               <div className="flex items-center justify-between">
                 <CardTitle className="flex items-center gap-2"><Rocket/> Your Personalized Roadmap</CardTitle>
-                <Button variant="outline" size="icon" onClick={handleSaveRoadmap}>
+                <Button variant="outline" size="icon" onClick={handleSaveRoadmap} type="button">
                   <Bookmark className="h-4 w-4" />
                   <span className="sr-only">Save Roadmap</span>
                 </Button>
