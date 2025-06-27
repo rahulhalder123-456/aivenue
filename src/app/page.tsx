@@ -1,35 +1,11 @@
 'use client';
 
-import { useAuth } from '@/contexts/auth-context';
-import { useRouter } from 'next/navigation';
-import { useEffect } from 'react';
 import { Button } from '@/components/ui/button';
 import Link from 'next/link';
 import { BrainCircuit, Bot, ArrowRight, Users, Check, Globe } from 'lucide-react';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
-import { Loader2 } from 'lucide-react';
 
 export default function Home() {
-  const { user, loading } = useAuth();
-  const router = useRouter();
-
-  useEffect(() => {
-    // If the user is authenticated, redirect them to the dashboard.
-    if (!loading && user) {
-      router.replace('/dashboard');
-    }
-  }, [user, loading, router]);
-
-  // While checking authentication, or if the user is logged in (before redirect), show a loading spinner.
-  if (loading || user) {
-    return (
-      <div className="flex h-screen items-center justify-center bg-background">
-        <Loader2 className="h-8 w-8 animate-spin text-primary" />
-      </div>
-    );
-  }
-
-  // If authentication is done and there's no user, show the public landing page.
   return (
     <div className="flex min-h-screen flex-col bg-background">
       <header className="sticky top-0 z-50 w-full border-b bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -171,7 +147,7 @@ export default function Home() {
 
       <footer className="border-t">
         <div className="container py-6 text-center text-sm text-muted-foreground">
-            <p>&copy; {new Date().getFullYear()} DevMap Pro. All rights reserved.</p>
+            <p>&copy; 2024 DevMap Pro. All rights reserved.</p>
         </div>
       </footer>
     </div>
