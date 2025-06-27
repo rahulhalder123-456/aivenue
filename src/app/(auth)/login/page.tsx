@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -45,7 +46,7 @@ export default function LoginPage() {
   }, [user, authLoading, router]);
 
   if (authLoading || user) {
-    return <Loader2 className="h-8 w-8 animate-spin text-primary" />;
+    return <div className="flex h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 
   const handleLogin = async (e: React.FormEvent) => {
@@ -58,7 +59,7 @@ export default function LoginPage() {
       await signInWithEmailAndPassword(auth!, email, password);
       router.push('/dashboard');
     } catch (err: any) {
-      if (err.code === 'auth/invalid-credential') {
+      if (err.code === 'auth/invalid-credential' || err.code === 'auth/wrong-password' || err.code === 'auth/user-not-found') {
         setError('Invalid email or password. Please try again.');
       } else {
         setError('An unexpected error occurred. Please try again later.');

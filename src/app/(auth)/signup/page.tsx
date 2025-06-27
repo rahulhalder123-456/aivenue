@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect } from 'react';
@@ -45,7 +46,7 @@ export default function SignupPage() {
   }, [user, authLoading, router]);
 
   if (authLoading || user) {
-    return <Loader2 className="h-8 w-8 animate-spin text-primary" />;
+    return <div className="flex h-screen items-center justify-center"><Loader2 className="h-8 w-8 animate-spin text-primary" /></div>;
   }
 
   const handleSignup = async (e: React.FormEvent) => {
