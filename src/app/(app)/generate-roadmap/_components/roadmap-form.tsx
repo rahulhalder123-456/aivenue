@@ -3,13 +3,16 @@
 import { useActionState, useEffect, useRef } from 'react';
 import { useFormStatus } from 'react-dom';
 import { generateRoadmapAction } from '@/app/actions';
-import { Card, CardContent, CardFooter } from '@/components/ui/card';
+import { Card, CardContent, CardFooter, CardHeader, CardTitle } from '@/components/ui/card';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from '@/components/ui/select';
-import { Rocket, Sparkles, Loader2 } from 'lucide-react';
+import { Rocket, Sparkles, Loader2, Milestone, Lightbulb, Cpu, BookOpen, CheckCircle2, Bookmark, ExternalLink } from 'lucide-react';
 import { Skeleton } from '@/components/ui/skeleton';
+import { Accordion, AccordionContent, AccordionItem, AccordionTrigger } from '@/components/ui/accordion';
+import Link from 'next/link';
+
 
 function SubmitButton() {
     const { pending } = useFormStatus();
@@ -73,20 +76,92 @@ function RoadmapFormBody({ state, resultRef }: { state: any; resultRef: React.Re
         {pending && (
           <Card className="max-w-3xl">
             <CardContent className="p-6">
-              <div className="space-y-4">
-                <Skeleton className="h-8 w-1/2" />
-                <Skeleton className="h-4 w-full" />
-                <Skeleton className="h-4 w-3/4" />
-                <Skeleton className="h-4 w-full" />
-              </div>
+                <div className="space-y-4">
+                    <div className="flex items-center gap-4">
+                        <Skeleton className="h-12 w-12 rounded-full" />
+                        <div className="space-y-2">
+                            <Skeleton className="h-6 w-48" />
+                            <Skeleton className="h-4 w-32" />
+                        </div>
+                    </div>
+                    <div className="pl-16 space-y-4">
+                        <Skeleton className="h-4 w-full" />
+                        <Skeleton className="h-4 w-3/4" />
+                        <Skeleton className="h-4 w-full" />
+                    </div>
+                </div>
             </CardContent>
           </Card>
         )}
         {state.roadmap && (
           <Card className="max-w-3xl animate-in fade-in-50">
-            <CardContent className="p-6">
-              <h3 className="text-2xl font-bold font-headline mb-4 flex items-center gap-2"><Rocket/> Your Personalized Roadmap</h3>
-              <pre className="whitespace-pre-wrap font-code bg-secondary p-4 rounded-md text-sm">{state.roadmap}</pre>
+            <CardHeader>
+              <CardTitle className="flex items-center gap-2"><Rocket/> Your Personalized Roadmap</CardTitle>
+            </CardHeader>
+            <CardContent>
+              <Accordion type="single" collapsible className="w-full" defaultValue="item-0">
+                {state.roadmap.map((phase: any, index: number) => (
+                  <AccordionItem value={`item-${index}`} key={index}>
+                    <AccordionTrigger className="text-lg font-semibold hover:no-underline">
+                      <div className="flex items-center gap-4 text-left">
+                        <div className="flex items-center justify-center h-12 w-12 rounded-full bg-primary/10 text-primary flex-shrink-0">
+                          <Milestone />
+                        </div>
+                        <div>
+                          {phase.title}
+                          <p className="text-sm font-normal text-muted-foreground">{phase.duration}</p>
+                        </div>
+                      </div>
+                    </AccordionTrigger>
+                    <AccordionContent className="pl-[52px] ml-6 border-l-2 border-primary/20 space-y-6 pt-4 pb-2">
+                       <div className="space-y-2 pl-4">
+                        <h4 className="font-semibold flex items-center gap-2"><Lightbulb size={18} /> Goal</h4>
+                        <p className="text-muted-foreground">{phase.goal}</p>
+                      </div>
+
+                      {phase.technologies?.length > 0 && (
+                        <div className="space-y-4 pl-4">
+                          <h4 className="font-semibold flex items-center gap-2"><Cpu size={18} /> Technologies & Skills</h4>
+                          <ul className="space-y-3">
+                            {phase.technologies.map((tech: any, techIndex: number) => (
+                              <li key={techIndex} className="flex items-start gap-3">
+                                <CheckCircle2 size={18} className="text-primary mt-1 flex-shrink-0" />
+                                <div>
+                                  <p className="font-medium">{tech.title}</p>
+                                  <p className="text-sm text-muted-foreground">{tech.description}</p>
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+
+                      {phase.resources?.length > 0 && (
+                        <div className="space-y-4 pl-4">
+                          <h4 className="font-semibold flex items-center gap-2"><BookOpen size={18} /> Learning Resources</h4>
+                          <ul className="space-y-3">
+                            {phase.resources.map((resource: any, resIndex: number) => (
+                              <li key={resIndex} className="flex items-start gap-3">
+                                <Bookmark size={18} className="text-primary mt-1 flex-shrink-0" />
+                                <div>
+                                  <p className="font-medium">{resource.title}</p>
+                                  <p className="text-sm text-muted-foreground">{resource.description}</p>
+                                  {resource.url && (
+                                     <Link href={resource.url} target="_blank" className="flex items-center gap-1 text-primary hover:underline text-sm mt-1">
+                                        <ExternalLink size={14} />
+                                        View Resource
+                                      </Link>
+                                  )}
+                                </div>
+                              </li>
+                            ))}
+                          </ul>
+                        </div>
+                      )}
+                    </AccordionContent>
+                  </AccordionItem>
+                ))}
+              </Accordion>
             </CardContent>
           </Card>
         )}

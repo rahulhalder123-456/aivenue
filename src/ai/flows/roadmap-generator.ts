@@ -15,13 +15,27 @@ import {z} from 'genkit';
 const RoadmapGeneratorInputSchema = z.object({
   careerPath: z
     .string()
-    .describe('The desired career path (e.g., \'Full-Stack Web Developer\').'),
-  skillLevel: z.string().describe('The current skill level (e.g., \'Beginner\').'),
+    .describe("The desired career path (e.g., 'Full-Stack Web Developer')."),
+  skillLevel: z.string().describe("The current skill level (e.g., 'Beginner')."),
 });
 export type RoadmapGeneratorInput = z.infer<typeof RoadmapGeneratorInputSchema>;
 
+const RoadmapModuleItemSchema = z.object({
+  title: z.string().describe('The title of the item (e.g., a technology, skill, or resource name).'),
+  description: z.string().describe('A brief description of the item.'),
+  url: z.string().url().optional().describe('A URL to a relevant resource, if applicable.'),
+});
+
+const RoadmapPhaseSchema = z.object({
+  title: z.string().describe('The title of the roadmap phase (e.g., "Phase 1: Foundations").'),
+  duration: z.string().describe('The estimated duration for this phase (e.g., "3-6 Months").'),
+  goal: z.string().describe('The primary goal of this phase.'),
+  technologies: z.array(RoadmapModuleItemSchema).describe('A list of technologies or skills to learn in this phase.'),
+  resources: z.array(RoadmapModuleItemSchema).describe('A list of learning resources for this phase.'),
+});
+
 const RoadmapGeneratorOutputSchema = z.object({
-  roadmap: z.string().describe('A personalized learning roadmap with relevant technologies and learning resources.'),
+  roadmap: z.array(RoadmapPhaseSchema).describe('A personalized learning roadmap with relevant technologies and learning resources, broken down into phases.'),
 });
 export type RoadmapGeneratorOutput = z.infer<typeof RoadmapGeneratorOutputSchema>;
 
@@ -35,12 +49,12 @@ const prompt = ai.definePrompt({
   output: {schema: RoadmapGeneratorOutputSchema},
   prompt: `You are an AI career coach who helps people create personalized roadmaps to achieve their desired career path.
 
-You will take the user's desired career path and current skill level, and generate a roadmap with relevant technologies and learning resources.
+You will take the user's desired career path and current skill level, and generate a structured, multi-phase roadmap. For each phase, provide a title, duration, goal, and lists of technologies/skills and learning resources.
 
 Desired Career Path: {{{careerPath}}}
 Current Skill Level: {{{skillLevel}}}
 
-Roadmap:`,
+Generate the roadmap.`,
 });
 
 const generateRoadmapFlow = ai.defineFlow(
