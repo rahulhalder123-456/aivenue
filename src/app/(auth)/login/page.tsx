@@ -11,6 +11,7 @@ import { Card, CardContent, CardDescription, CardFooter, CardHeader, CardTitle }
 import Link from 'next/link';
 import { Loader2 } from 'lucide-react';
 import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
+import { useAuth } from '@/contexts/auth-context';
 
 function GoogleIcon(props: React.SVGProps<SVGSVGElement>) {
   return (
@@ -28,6 +29,7 @@ export default function LoginPage() {
   const [googleLoading, setGoogleLoading] = useState(false);
   const router = useRouter();
   const [firebaseConfigured, setFirebaseConfigured] = useState(true);
+  const { user, loading: authLoading } = useAuth();
 
   useEffect(() => {
     if (!auth) {
@@ -35,6 +37,16 @@ export default function LoginPage() {
       setError("Firebase is not configured. Please add your Firebase project credentials to the environment variables to enable login.");
     }
   }, []);
+
+  useEffect(() => {
+    if (!authLoading && user) {
+      router.push('/dashboard');
+    }
+  }, [user, authLoading, router]);
+
+  if (authLoading || user) {
+    return <Loader2 className="h-8 w-8 animate-spin text-primary" />;
+  }
 
   const handleLogin = async (e: React.FormEvent) => {
     e.preventDefault();
