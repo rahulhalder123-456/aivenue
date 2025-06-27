@@ -23,7 +23,7 @@ export type RoadmapGeneratorInput = z.infer<typeof RoadmapGeneratorInputSchema>;
 const RoadmapModuleItemSchema = z.object({
   title: z.string().describe('The title of the item (e.g., a technology, skill, or resource name).'),
   description: z.string().describe('A brief description of the item.'),
-  url: z.string().url().optional().describe('A URL to a relevant resource, if applicable.'),
+  url: z.string().optional().describe('A URL to a relevant resource, if applicable.'),
 });
 
 const RoadmapPhaseSchema = z.object({
