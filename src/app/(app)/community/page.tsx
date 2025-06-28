@@ -655,5 +655,3 @@ function PostSkeleton() {
     </Card>
   );
 }
-
-    

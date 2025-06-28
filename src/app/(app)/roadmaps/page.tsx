@@ -1,3 +1,4 @@
+
 "use client";
 
 import { useState, useEffect, useCallback } from "react";
@@ -11,7 +12,7 @@ import { Checkbox } from "@/components/ui/checkbox";
 import { Progress } from "@/components/ui/progress";
 import { useAuth } from "@/contexts/auth-context";
 import { db } from "@/lib/firebase";
-import { collection, query, where, getDocs, doc, deleteDoc, updateDoc } from "firebase/firestore";
+import { collection, query, where, getDocs, doc, deleteDoc, updateDoc, type Timestamp } from "firebase/firestore";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface RoadmapItem {
@@ -33,7 +34,7 @@ interface SavedRoadmap {
   id: string;
   title: string;
   description: string;
-  createdAt: any; // Firestore timestamp
+  createdAt: Timestamp | null;
   roadmap: RoadmapPhase[];
 }
 
@@ -55,12 +56,11 @@ export default function RoadmapsPage() {
       const q = query(collection(db, "roadmaps"), where("userId", "==", user.uid));
       const querySnapshot = await getDocs(q);
       const roadmapsData = querySnapshot.docs.map(doc => ({ id: doc.id, ...doc.data() } as SavedRoadmap));
-
-      // Sort on the client-side to ensure newest roadmaps appear first and avoid composite index requirement
+      
       roadmapsData.sort((a, b) => {
-        const timeA = a.createdAt && typeof a.createdAt.toDate === 'function' ? a.createdAt.toDate().getTime() : 0;
-        const timeB = b.createdAt && typeof b.createdAt.toDate === 'function' ? b.createdAt.toDate().getTime() : 0;
-        return timeB - timeA;
+        const dateA = a.createdAt?.toDate() ?? new Date(0);
+        const dateB = b.createdAt?.toDate() ?? new Date(0);
+        return dateB.getTime() - dateA.getTime();
       });
 
       setSavedRoadmaps(roadmapsData);
@@ -85,22 +85,27 @@ export default function RoadmapsPage() {
         toast({ title: "Error", description: "Firebase is not configured.", variant: "destructive" });
         return;
     }
+    const originalRoadmaps = [...savedRoadmaps];
+    setSavedRoadmaps(prev => prev.filter(r => r.id !== roadmapId));
     try {
         await deleteDoc(doc(db, "roadmaps", roadmapId));
-        setSavedRoadmaps(prev => prev.filter(r => r.id !== roadmapId));
         toast({
             title: "Roadmap Deleted",
             description: "The roadmap has been removed from your saved list.",
         });
     } catch (error) {
         toast({ title: "Error", description: "Failed to delete roadmap.", variant: "destructive" });
+        setSavedRoadmaps(originalRoadmaps);
     }
   };
 
   const handleToggle = async (roadmapId: string, phaseIndex: number, itemType: 'technologies' | 'resources', itemIndex: number) => {
+    const originalRoadmaps = [...savedRoadmaps];
     const newSavedRoadmaps = savedRoadmaps.map(r => {
         if (r.id === roadmapId) {
             const newRoadmap = { ...r };
+            // Deep copy to avoid mutation issues
+            newRoadmap.roadmap = JSON.parse(JSON.stringify(newRoadmap.roadmap));
             const item = newRoadmap.roadmap[phaseIndex][itemType][itemIndex];
             item.completed = !item.completed;
             return newRoadmap;
@@ -114,8 +119,7 @@ export default function RoadmapsPage() {
 
     if (!db) {
         toast({ title: "Error", description: "Firebase is not configured.", variant: "destructive" });
-        // Revert UI change on failure
-        setSavedRoadmaps(savedRoadmaps);
+        setSavedRoadmaps(originalRoadmaps);
         return;
     }
     
@@ -125,8 +129,7 @@ export default function RoadmapsPage() {
     } catch (error) {
         console.error("Failed to update roadmap", error);
         toast({ title: "Error", description: "Could not sync your progress.", variant: "destructive" });
-        // Revert UI change on failure
-        setSavedRoadmaps(savedRoadmaps);
+        setSavedRoadmaps(originalRoadmaps);
     }
   };
 
