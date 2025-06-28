@@ -75,8 +75,13 @@ export function AssistantForm() {
 
         setIsPending(true);
         setMessages(prev => [...prev, { role: 'user', content: question }]);
+        if (inputRef.current) {
+            inputRef.current.value = "";
+        }
 
         const result = await askAiAssistantAction({ message: "", errors: {}, answer: null }, formData);
+
+        setIsPending(false);
 
         if (result.answer) {
             setMessages(prev => [...prev, { role: 'assistant', content: result.answer }]);
@@ -93,9 +98,9 @@ export function AssistantForm() {
              setMessages(prev => [...prev, { role: 'error', content: `Sorry, something went wrong: ${errorMessage}` }]);
         }
         
-        formRef.current?.reset();
-        inputRef.current?.focus();
-        setIsPending(false);
+        if (inputRef.current) {
+            inputRef.current.focus();
+        }
     };
 
     return (
