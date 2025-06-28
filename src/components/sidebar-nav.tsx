@@ -22,6 +22,7 @@ import { usePathname } from "next/navigation"
 import Link from "next/link"
 import { Button } from "@/components/ui/button"
 import { useAuth } from "@/contexts/auth-context"
+import { ThemeToggle } from "./theme-toggle"
 
 const links = [
   { href: "/dashboard", label: "Dashboard", icon: LayoutDashboard },
@@ -98,6 +99,11 @@ export function SidebarNav() {
             </SidebarMenuButton>
           </SidebarMenuItem>
         </SidebarMenu>
+        <Separator/>
+        <div className="p-2 flex items-center justify-between">
+          <span className="text-sm font-medium group-data-[collapsible=icon]:hidden">Theme</span>
+          <ThemeToggle />
+        </div>
       </SidebarFooter>
     </>
   )

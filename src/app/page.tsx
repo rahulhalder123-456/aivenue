@@ -7,6 +7,7 @@ import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { useAuth } from '@/contexts/auth-context';
 import { Skeleton } from '@/components/ui/skeleton';
 import dynamic from 'next/dynamic';
+import { ThemeToggle } from '@/components/theme-toggle';
 
 const Globe3D = dynamic(() => import('@/components/ui/globe').then(m => m.Globe), {
     ssr: false,
@@ -39,6 +40,7 @@ export default function Home() {
             <span className="font-bold">Aivenue</span>
           </Link>
           <nav className="flex flex-1 items-center justify-end space-x-2">
+            <ThemeToggle />
             {loading ? (
                 <>
                     <Skeleton className="h-9 w-20" />
