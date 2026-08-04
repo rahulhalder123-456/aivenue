@@ -1,7 +1,5 @@
 'use server';
 
-export const maxDuration = 60;
-
 import { generateRoadmap, RoadmapGeneratorInput } from '@/ai/flows/roadmap-generator';
 import { askAiAssistant, AskAiAssistantInput } from '@/ai/flows/ai-assistant';
 import { z } from 'zod';

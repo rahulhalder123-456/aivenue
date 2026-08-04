@@ -21,6 +21,8 @@ export const metadata: Metadata = {
   description: 'Your ultimate developer roadmap tool.',
 };
 
+export const maxDuration = 60;
+
 export default function RootLayout({
   children,
 }: Readonly<{
