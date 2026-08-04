@@ -2,6 +2,8 @@
 'use server';
 
 import OpenAI from 'openai';
+import ytSearch from 'yt-search';
+import google from 'googlethis';
 
 // Define standard types for our frontend
 export type RoadmapGeneratorInput = {
@@ -143,5 +145,36 @@ export async function generateRoadmap(input: RoadmapGeneratorInput): Promise<Roa
     finalJsonString = await judgeResponses(client, judgeModel, userPrompt, resA, resB);
   }
 
-  return cleanJSON(finalJsonString) as RoadmapGeneratorOutput;
+  const parsed = cleanJSON(finalJsonString) as RoadmapGeneratorOutput;
+
+  // Post-process to fix hallucinated URLs with real search results concurrently
+  const searchPromises: Promise<void>[] = [];
+
+  for (const phase of parsed.roadmap) {
+    if (!phase.resources) continue;
+    for (const resource of phase.resources) {
+      searchPromises.push((async () => {
+        try {
+          if (resource.title.toLowerCase().includes('video') || resource.title.toLowerCase().includes('youtube') || resource.title.toLowerCase().includes('course')) {
+            const r = await ytSearch(resource.title);
+            if (r.videos && r.videos.length > 0) {
+              resource.url = r.videos[0].url;
+            }
+          } else {
+            const options = { page: 0, safe: false, additional_params: { hl: 'en' } };
+            const r = await google.search(resource.title, options);
+            if (r.results && r.results.length > 0) {
+              resource.url = r.results[0].url;
+            }
+          }
+        } catch (err) {
+          console.error("Error fetching real URL for: " + resource.title, err);
+        }
+      })());
+    }
+  }
+
+  await Promise.all(searchPromises);
+
+  return parsed;
 }
