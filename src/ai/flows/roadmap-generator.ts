@@ -2,7 +2,9 @@
 'use server';
 
 import OpenAI from 'openai';
+// @ts-ignore
 import ytSearch from 'yt-search';
+// @ts-ignore
 import google from 'googlethis';
 
 // Define standard types for our frontend
