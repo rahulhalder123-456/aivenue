@@ -49,11 +49,17 @@ export async function generateRoadmapAction(prevState: any, formData: FormData) 
     };
   } catch (error) {
     console.error(error);
+
+    let message = 'An error occurred while generating the roadmap.';
+    if (error instanceof Error && error.message === 'NVIDIA_API_KEY_MISSING') {
+      message = 'Roadmap generation failed because the NVIDIA API key is not configured. Set NVIDIA_API_KEY in your environment.';
+    }
+
     return { 
         roadmap: prevState.roadmap,
         careerPath: formDataObj.careerPath as string,
         skillLevel: formDataObj.skillLevel as string,
-        message: 'An error occurred while generating the roadmap.',
+        message,
         errors: {}
     };
   }
