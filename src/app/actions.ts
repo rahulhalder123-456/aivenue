@@ -1,5 +1,6 @@
-
 'use server';
+
+export const maxDuration = 60;
 
 import { generateRoadmap, RoadmapGeneratorInput } from '@/ai/flows/roadmap-generator';
 import { askAiAssistant, AskAiAssistantInput } from '@/ai/flows/ai-assistant';
@@ -51,8 +52,8 @@ export async function generateRoadmapAction(prevState: any, formData: FormData) 
     console.error(error);
 
     let message = 'An error occurred while generating the roadmap.';
-    if (error instanceof Error && error.message === 'NVIDIA_API_KEY_MISSING') {
-      message = 'Roadmap generation failed because the NVIDIA API key is not configured. Set NVIDIA_API_KEY in your environment.';
+    if (error instanceof Error) {
+      message = `Error: ${error.message}`;
     }
 
     return { 

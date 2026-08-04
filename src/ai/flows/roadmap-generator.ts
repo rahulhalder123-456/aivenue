@@ -121,8 +121,8 @@ export async function generateRoadmap(input: RoadmapGeneratorInput): Promise<Roa
   const userPrompt = `Desired Career Path: ${input.careerPath}\nCurrent Skill Level: ${input.skillLevel}`;
 
   // Step 1: Parallel Generation (Mixture of Experts)
-  const generatorA = "meta/llama-3.1-70b-instruct";
-  const generatorB = "meta/llama-3.1-8b-instruct";
+  const generatorA = "meta/llama-3.1-8b-instruct";
+  const generatorB = "google/gemma-2-9b-it";
 
   const [resA, resB] = await Promise.all([
     generateWithModel(client, generatorA, userPrompt).catch(e => { console.error("Error from A:", e); return ""; }),
@@ -134,7 +134,7 @@ export async function generateRoadmap(input: RoadmapGeneratorInput): Promise<Roa
   }
 
   // Step 2: The Judge
-  const judgeModel = "meta/llama-3.1-405b-instruct"; // or nvidia/nemotron-4-340b-instruct
+  const judgeModel = "meta/llama-3.1-70b-instruct"; // Faster judge model
   
   // If one failed, just parse the successful one. If both succeeded, judge them.
   let finalJsonString = resA || resB;
